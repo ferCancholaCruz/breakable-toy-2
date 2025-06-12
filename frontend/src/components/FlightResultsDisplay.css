@@ -1,0 +1,150 @@
+.flight-results-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f9fc;
+}
+
+.sort-controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.flight-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flight-card {
+  background-color: #ffffff;
+  border: 1px solid #dce3ed;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.flight-info {
+  line-height: 1.6;
+}
+
+.flight-info p {
+  margin: 0.3rem 0;
+}
+
+.flight-info strong {
+  color: #2b4eff;
+}
+
+ul {
+  padding-left: 1.25rem;
+  margin: 0.3rem 0;
+}
+
+ul li {
+  list-style-type: disc;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.sort-controls input[type='checkbox'] {
+  margin-right: 0.3rem;
+}
+
+.sort-controls button {
+  background: none;
+  border: none;
+  color: #2b4eff;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sort-controls button:hover {
+  text-decoration: underline;
+}
+
+.flight-details-wrapper {
+  padding: 2rem;
+}
+
+.flight-detail-main {
+  display: flex;
+  gap: 2rem;
+}
+
+.segments-container {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.segment-card {
+  background-color: #f9f9f9;
+  border-left: 4px solid #0078d4;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.traveler-fare-box {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 6px;
+}
+
+.layover-info {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #888;
+}
+
+.price-breakdown {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  height: fit-content;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.traveler-prices {
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.back-button {
+  background-color: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #005ea2;
+}
+
+.flight-details-wrapper h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
