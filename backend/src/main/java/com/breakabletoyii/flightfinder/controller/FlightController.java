@@ -3,6 +3,8 @@ import com.breakabletoyii.flightfinder.amadeus.FlightSearchService;
 import com.breakabletoyii.flightfinder.dto.FlightOfferDTO;
 import com.breakabletoyii.flightfinder.model.Flight;
 
+import com.breakabletoyii.flightfinder.controller.GlobalExceptionHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -20,15 +22,9 @@ public class FlightController {
     private FlightSearchService flightSearchService;
 
     @PostMapping("/search")
-    public ResponseEntity<?> searchFlights(@RequestBody Flight request){
-        try{
-            List<FlightOfferDTO> offers = flightSearchService.searchFlights(request);
-            return ResponseEntity.ok(offers);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return ResponseEntity.status(500).body("Error at searching flights: " + e.getMessage());
+    public ResponseEntity<List<FlightOfferDTO>> searchFlights(@RequestBody Flight request){
+        List<FlightOfferDTO> offers = flightSearchService.searchFlights(request);
+        return ResponseEntity.ok(offers);
     }
 
-}
 }

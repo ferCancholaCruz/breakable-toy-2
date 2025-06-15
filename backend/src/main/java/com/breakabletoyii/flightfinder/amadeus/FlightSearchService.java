@@ -6,106 +6,90 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
+
 import java.util.List;
 
 @Service
 public class FlightSearchService {
 
     private final AuthService authService;
-    //private final FlightOfferMapper mapper;
     private final ExtendedFlightOfferMapper mapper;
+    private final HttpService httpService;
 
-
-    public FlightSearchService(ExtendedFlightOfferMapper mapper, AuthService authService) {
-    //public FlightSearchService(FlightOfferMapper mapper, AuthService authService) {
+    public FlightSearchService(ExtendedFlightOfferMapper mapper, AuthService authService, HttpService httpService) {
         this.mapper = mapper;
         this.authService = authService;
+        this.httpService = httpService;
     }
 
-    public List<FlightOfferDTO> searchFlights(Flight flight) throws Exception {
-        // Get the access token
-        String token = authService.getAccessToken();
-        System.out.println("Access token obtained.");
+    public List<FlightOfferDTO> searchFlights(Flight flight) {
+        try {
+            String token = authService.getAccessToken();
+            JSONObject requestBody = buildRequestBody(flight);
 
-        // Build the JSON
+            String responseBody = httpService.sendPost(
+                    "https://test.api.amadeus.com/v2/shopping/flight-offers",
+                    token,
+                    requestBody.toString()
+            );
+
+            return mapper.mapFromJson(responseBody);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while calling Amadeus API", e);
+        }
+    }
+
+    private JSONObject buildRequestBody(Flight flight) {
         JSONObject requestBody = new JSONObject();
-
         requestBody.put("currencyCode", flight.getCurrency());
 
         JSONArray originDestinations = new JSONArray();
+        originDestinations.put(createFlightSegment("1", flight.getDepartureCode(), flight.getArrivalCode(), flight.getDepartureDate()));
 
-        // Add outbound flight
-        JSONObject outbound = new JSONObject();
-        outbound.put("id", "1");
-        outbound.put("originLocationCode", flight.getDepartureCode());
-        outbound.put("destinationLocationCode", flight.getArrivalCode());
-        outbound.put("departureDateTimeRange", new JSONObject().put("date", flight.getDepartureDate()));
-        originDestinations.put(outbound);
-
-        // add return flight if provided
         if (flight.getReturnDate() != null && !flight.getReturnDate().isEmpty()) {
-            JSONObject inbound = new JSONObject();
-            inbound.put("id", "2");
-            inbound.put("originLocationCode", flight.getArrivalCode());
-            inbound.put("destinationLocationCode", flight.getDepartureCode());
-            inbound.put("departureDateTimeRange", new JSONObject().put("date", flight.getReturnDate()));
-            originDestinations.put(inbound);
+            originDestinations.put(createFlightSegment("2", flight.getArrivalCode(), flight.getDepartureCode(), flight.getReturnDate()));
         }
 
         requestBody.put("originDestinations", originDestinations);
+        requestBody.put("travelers", createTravelers(flight.getNumberAdults()));
+        requestBody.put("sources", new JSONArray().put("GDS"));
+        requestBody.put("searchCriteria", buildSearchCriteria(flight));
 
-        // Add travelers
+        System.out.println("Sending request to Amadeus with body:\n" + requestBody.toString(2));
+        return requestBody;
+    }
+
+    private JSONObject createFlightSegment(String id, String origin, String destination, String date) {
+        JSONObject segment = new JSONObject();
+        segment.put("id", id);
+        segment.put("originLocationCode", origin);
+        segment.put("destinationLocationCode", destination);
+        segment.put("departureDateTimeRange", new JSONObject().put("date", date));
+        return segment;
+    }
+
+    private JSONArray createTravelers(int numberOfAdults) {
         JSONArray travelers = new JSONArray();
-        for (int i = 1; i <= flight.getNumberAdults(); i++) {
+        for (int i = 1; i <= numberOfAdults; i++) {
             JSONObject traveler = new JSONObject();
             traveler.put("id", String.valueOf(i));
             traveler.put("travelerType", "ADULT");
             travelers.put(traveler);
         }
-        requestBody.put("travelers", travelers);
+        return travelers;
+    }
 
-        // Other options
-        requestBody.put("sources", new JSONArray().put("GDS"));
-
+    private JSONObject buildSearchCriteria(Flight flight) {
         JSONObject searchCriteria = new JSONObject();
         searchCriteria.put("maxFlightOffers", 50);
 
-        JSONObject filters = new JSONObject();
         if (flight.isNonStop()) {
+            JSONObject filters = new JSONObject();
             filters.put("connectionRestriction", new JSONObject().put("maxNumberOfConnections", 0));
-        }
-        searchCriteria.put("flightFilters", filters);
-
-        requestBody.put("searchCriteria", searchCriteria);
-
-        System.out.println("Sending request to Amadeus with body:\n" + requestBody.toString(2));
-
-        // Prepare and send the POST request
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10)) // Avoid hanging
-                .build();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://test.api.amadeus.com/v2/shopping/flight-offers"))
-                .header("Authorization", "Bearer " + token)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        System.out.println("Response status code: " + response.statusCode());
-
-        if (response.statusCode() != 200) {
-            System.err.println("API Error: " + response.body());
-            throw new RuntimeException("Something went wrong. Response: " + response.body());
+            searchCriteria.put("flightFilters", filters);
         }
 
-        return mapper.mapFromJson(response.body());
+        return searchCriteria;
     }
 }

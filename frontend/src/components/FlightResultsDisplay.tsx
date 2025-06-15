@@ -90,7 +90,7 @@ const FlightResultsDisplay: React.FC<FlightResultsDisplayProps> = ({
   });
 
   return (
-    <div className="flight-results-container">
+    <div className="flight-results-container" data-cy="results-container">
       <div className="sort-controls">
         <strong>Sort by:</strong>
         {(['price', 'duration'] as const).map(field => (
