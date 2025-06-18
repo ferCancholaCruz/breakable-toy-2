@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+//service to look for airlines with name, used in autocomplete
 @Service
 public class AirlineLookupService {
 
@@ -26,7 +27,10 @@ public class AirlineLookupService {
             return airlineNameCache.get(airlineCode);
         }
 
+        //get the access token
         String token = authService.getAccessToken();
+
+        //build the url with the airline code
         String url = "https://test.api.amadeus.com/v1/reference-data/airlines?airlineCodes=" + airlineCode;
 
         String responseBody = httpService.sendGet(url, token);
@@ -34,6 +38,7 @@ public class AirlineLookupService {
         JSONObject json = new JSONObject(responseBody);
         JSONArray data = json.getJSONArray("data");
 
+        //if foud, return the airline name
         String name = data.length() > 0
                 ? data.getJSONObject(0).getString("businessName")
                 : "Unknown airline";

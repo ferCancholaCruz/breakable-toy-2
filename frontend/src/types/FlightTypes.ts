@@ -24,8 +24,14 @@ export interface StopDTO {
   export interface SegmentDetailsDTO {
     id?: string;
     departureDateTime: string;
+    departureAirportName: string;
+    arrivalAirportName: string;
+    departureAirportCode: string;
+    arrivalAirportCode: string;
     arrivalDateTime: string;
     carrierCode: string;
+    carrierName:string;
+    operatingCarrierName: string;
     operatingCarrierCode?: string;
     flightNumber: string;
     aircraft?: string;
@@ -58,7 +64,7 @@ export interface StopDTO {
     departureAirportName: string;
     departureDate: string;
     departureTime: string;
-  
+    id: string;
     arrivalAirportCode: string;
     arrivalAirportName: string;
     arrivalDate: string;

@@ -15,6 +15,7 @@ public class AirportController {
     @Autowired
     private AirportSearchService airportSearchService;
 
+    //exit is a list of airports in json format
     @GetMapping("/search")
     public ResponseEntity<List<AirportDTO>> searchAirports(@RequestParam String keyword) {
         List<AirportDTO> airports = airportSearchService.searchAirports(keyword);

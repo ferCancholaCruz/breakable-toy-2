@@ -6,14 +6,12 @@ export interface AirportOption {
   cityName: string;
 }
 
-// look for airports
 export async function searchAirports(keyword: string): Promise<AirportOption[]> {
   const response = await fetch(`/api/airports/search?keyword=${encodeURIComponent(keyword)}`);
   if (!response.ok) throw new Error(await response.text());
   return await response.json();
 }
 
-// search for flights
 export async function searchFlights(payload: {
   departureCode: string;
   arrivalCode: string;

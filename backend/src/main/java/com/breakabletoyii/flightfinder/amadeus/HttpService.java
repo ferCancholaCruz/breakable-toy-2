@@ -18,13 +18,16 @@ public class HttpService {
                 .build();
     }
 
+    //method for sending the get petition
     public String sendGet(String url, String bearerToken) {
         try {
+            //build petition with url and token
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Authorization", "Bearer " + bearerToken)
                     .build();
 
+            //keep the response and send exceptions if its an error
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
@@ -38,6 +41,7 @@ public class HttpService {
         }
     }
 
+    //method for sending a post request with a body in json
     public String sendPost(String url, String bearerToken, String jsonBody) {
         try {
             HttpRequest request = HttpRequest.newBuilder()

@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+//service for getting access token
 @Service
 public class AuthService {
 
@@ -30,11 +31,12 @@ public class AuthService {
     //Getting access token
     public String getAccessToken() {
         try {
-            //If token is still valid
+            //If token is still valid return the same token
             if (accessToken != null && System.currentTimeMillis() < tokenExpiration) {
                 return accessToken;
             }
 
+            //Build the request
             String bodyRequest = "grant_type=client_credentials" +
                     "&client_id=" + URLEncoder.encode(config.getKey(), StandardCharsets.UTF_8) +
                     "&client_secret=" + URLEncoder.encode(config.getSecret(), StandardCharsets.UTF_8);
@@ -45,6 +47,7 @@ public class AuthService {
                     .POST(HttpRequest.BodyPublishers.ofString(bodyRequest))
                     .build();
 
+            //Create a new client to send request
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -53,6 +56,7 @@ public class AuthService {
                 throw new RuntimeException("Can not obtain token: " + response.body());
             }
 
+            //get the token form the json and obtain expiration
             JSONObject json = new JSONObject(response.body());
             accessToken = json.getString("access_token");
             int expiration = json.getInt("expires_in");
@@ -60,6 +64,7 @@ public class AuthService {
 
             return accessToken;
 
+            //manage the exceptions
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error while connecting with Amadeus API", e);
         } catch (JSONException e) {

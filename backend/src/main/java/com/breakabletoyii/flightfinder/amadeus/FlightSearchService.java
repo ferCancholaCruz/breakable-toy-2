@@ -15,6 +15,7 @@ public class FlightSearchService {
     private final AuthService authService;
     private final ExtendedFlightOfferMapper mapper;
     private final HttpService httpService;
+    private String latestSearchResponse;
 
     public FlightSearchService(ExtendedFlightOfferMapper mapper, AuthService authService, HttpService httpService) {
         this.mapper = mapper;
@@ -22,20 +23,59 @@ public class FlightSearchService {
         this.httpService = httpService;
     }
 
-    public List<FlightOfferDTO> searchFlights(Flight flight) {
-        try {
-            String token = authService.getAccessToken();
-            JSONObject requestBody = buildRequestBody(flight);
+    //use the cache
+    //create a json object and get the data array
+    public JSONObject getFlightById(String id) throws Exception {
+        String cachedJson = this.latestSearchResponse;
+        JSONArray data = new JSONObject(cachedJson).getJSONArray("data");
 
+        //get the object with the desired id
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject offer = data.getJSONObject(i);
+            if (offer.getString("id").equals(id)) {
+                return offer;
+            }
+        }
+
+        throw new RuntimeException("Flight not found with id: " + id);
+    }
+
+    //build he json that is sent and het the auth token
+    public List<FlightOfferDTO> searchFlights(Flight flight) {
+        System.out.println("NUEVO CÓDIGO: prueba");
+        JSONObject requestBody = buildRequestBody(flight);
+        String token = authService.getAccessToken();
+
+        try {
             String responseBody = httpService.sendPost(
                     "https://test.api.amadeus.com/v2/shopping/flight-offers",
                     token,
                     requestBody.toString()
+
             );
 
+            System.out.println("Amadeus API Response:");
+            System.out.println(responseBody);
+            this.latestSearchResponse = responseBody;
             return mapper.mapFromJson(responseBody);
 
         } catch (Exception e) {
+            String message = e.getMessage();
+            if (message != null && message.contains("\"status\": 429")) {
+                System.out.println("Amadeus rate limit hit. Retrying after 1 second...");
+                try {
+                    Thread.sleep(2000); // wait for retry
+                    String retryResponse = httpService.sendPost(
+                            "https://test.api.amadeus.com/v2/shopping/flight-offers",
+                            token,
+                            requestBody.toString()
+                    );
+                    this.latestSearchResponse = retryResponse;
+                    return mapper.mapFromJson(retryResponse);
+                } catch (Exception retryEx) {
+                    throw new RuntimeException("Retry after 429 failed.", retryEx);
+                }
+            }
             throw new RuntimeException("Error while calling Amadeus API", e);
         }
     }
@@ -56,10 +96,11 @@ public class FlightSearchService {
         requestBody.put("sources", new JSONArray().put("GDS"));
         requestBody.put("searchCriteria", buildSearchCriteria(flight));
 
-        System.out.println("Sending request to Amadeus with body:\n" + requestBody.toString(2));
+        //System.out.println("Sending request to Amadeus with body:\n" + requestBody.toString(2));
         return requestBody;
     }
 
+    //iterate every segment and gte the info we need for searching and displaying
     private JSONObject createFlightSegment(String id, String origin, String destination, String date) {
         JSONObject segment = new JSONObject();
         segment.put("id", id);
@@ -69,6 +110,7 @@ public class FlightSearchService {
         return segment;
     }
 
+    //create json object that allows to create a list of travelers
     private JSONArray createTravelers(int numberOfAdults) {
         JSONArray travelers = new JSONArray();
         for (int i = 1; i <= numberOfAdults; i++) {
@@ -80,6 +122,7 @@ public class FlightSearchService {
         return travelers;
     }
 
+    //create a json with the searching criteria tha is needed
     private JSONObject buildSearchCriteria(Flight flight) {
         JSONObject searchCriteria = new JSONObject();
         searchCriteria.put("maxFlightOffers", 50);

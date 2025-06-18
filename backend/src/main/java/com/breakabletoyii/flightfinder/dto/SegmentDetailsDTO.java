@@ -13,7 +13,62 @@ public class SegmentDetailsDTO {
     private String duration;
     private String cabin;
     private String bookingClass;
+    private String departureAirportCode;
+    private String departureAirportName;
+    private String arrivalAirportCode;
+    private String arrivalAirportName;
     private List<AmenityDTO> amenities;
+    private String carrierName;
+    private String operatingCarrierName;
+
+    public String getCarrierName() {
+        return carrierName;
+    }
+
+    public void setCarrierName(String carrierName) {
+        this.carrierName = carrierName;
+    }
+
+    public String getOperatingCarrierName() {
+        return operatingCarrierName;
+    }
+
+    public void setOperatingCarrierName(String operatingCarrierName) {
+        this.operatingCarrierName = operatingCarrierName;
+    }
+
+    public String getDepartureAirportCode() {
+        return departureAirportCode;
+    }
+
+    public void setDepartureAirportCode(String departureAirportCode) {
+        this.departureAirportCode = departureAirportCode;
+    }
+
+    public String getDepartureAirportName() {
+        return departureAirportName;
+    }
+
+    public void setDepartureAirportName(String departureAirportName) {
+        this.departureAirportName = departureAirportName;
+    }
+
+    public String getArrivalAirportCode() {
+        return arrivalAirportCode;
+    }
+
+    public void setArrivalAirportCode(String arrivalAirportCode) {
+        this.arrivalAirportCode = arrivalAirportCode;
+    }
+
+    public String getArrivalAirportName() {
+        return arrivalAirportName;
+    }
+
+    public void setArrivalAirportName(String arrivalAirportName) {
+        this.arrivalAirportName = arrivalAirportName;
+    }
+
 
     public String getId() {
         return id;

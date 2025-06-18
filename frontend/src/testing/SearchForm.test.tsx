@@ -135,24 +135,28 @@ test('alerts if return date is before departure date', async () => {
     await waitFor(() => expect(screen.getByText(/Charles de Gaulle/i)).toBeInTheDocument());
     fireEvent.click(screen.getByText(/Charles de Gaulle/i));
   
+    // acceptable date
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     fireEvent.change(depDate, {
       target: { value: tomorrow.toISOString().split('T')[0] },
     });
   
+    // trigger sent
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /search flights/i }));
     });
   
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        '/api/flights/search',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.any(Object),
-          body: expect.stringContaining('"departureCode":"MAD"'),
-        })
-      )
+    const calls = (global.fetch as jest.Mock).mock.calls;
+    const flightPost = calls.find(([url]) => url.includes('/api/flights/search'));
+  
+    expect(flightPost).toBeDefined();
+    expect(flightPost![0]).toContain('/api/flights/search');
+    expect(flightPost![1]).toEqual(
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.any(Object),
+        body: expect.stringContaining('"departureCode":"MAD"'),
+      })
     );
   });
