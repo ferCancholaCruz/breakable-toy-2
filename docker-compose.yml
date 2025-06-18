@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - frontend
+    env_file:
+      - .env
+    environment:
+      - AMADEUS_API_KEY=${AMADEUS_API_KEY}
+      - AMADEUS_API_SECRET=${AMADEUS_API_SECRET}
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:8080
+
