@@ -27,6 +27,24 @@ public class FlightOfferDTO {
 
     private List<SegmentDetailsDTO> segments;
     private PriceDetailsDTO priceDetails;
+    private String id;
+    private List<List<SegmentDetailsDTO>> itineraries;
+
+    public List<List<SegmentDetailsDTO>> getItineraries() {
+        return itineraries;
+    }
+
+    public void setItineraries(List<List<SegmentDetailsDTO>> itineraries) {
+        this.itineraries = itineraries;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDepartureAirportCode() {
         return departureAirportCode;

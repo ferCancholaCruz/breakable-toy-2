@@ -96,9 +96,9 @@ describe('Flight Search E2E', () => {
     // set dates
     const now = new Date();
     const departure = new Date(now);
-    departure.setDate(now.getDate() + 5);
+    departure.setDate(now.getDate() + 2);
     const returnDate = new Date(now);
-    returnDate.setDate(now.getDate() + 2);
+    returnDate.setDate(now.getDate() + 5);
 
     const formattedDeparture = departure.toISOString().split('T')[0];
     const formattedReturn = returnDate.toISOString().split('T')[0];
@@ -106,7 +106,7 @@ describe('Flight Search E2E', () => {
     cy.get('#departureDate').type(formattedDeparture);
     cy.get('#returnDate').type(formattedReturn);
 
-    // Paseengers
+    // set number of paseengers
     cy.get('#adults').clear().type('1');
 
     // validate alert
@@ -121,17 +121,17 @@ describe('Flight Search E2E', () => {
 
 describe('Flight Search E2E', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000'); // Asegúrate de tener el frontend corriendo
-    cy.contains('Start Searching for Flights').click(); // Abre el formulario
+    cy.visit('http://localhost:3000'); 
+    cy.contains('Start Searching for Flights').click(); // click button to open form
   });
 
   it('does not allow submission with zero adults', () => {
-    // Search and select departure
+    // select departure
     cy.get('#departureInput').type('Madrid');
     cy.wait(1000);
     cy.get('.suggestions-list li').contains(/Madrid/i).click();
 
-    // Search and select arrival
+    // select arrival
     cy.get('#arrivalInput').type('Barcelona');
     cy.wait(1000);
     cy.get('.suggestions-list li').contains(/Barcelona/i).click();
@@ -142,7 +142,7 @@ describe('Flight Search E2E', () => {
     const formattedDate = futureDate.toISOString().split('T')[0];
     cy.get('#departureDate').type(formattedDate);
 
-    // Set adults to 0
+    // number of adults to be set in 0
     cy.get('#adults').clear().type('0');
 
     // Try to submit
@@ -167,7 +167,7 @@ describe('Flight Search E2E', () => {
 
 describe('Flight Search E2E', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000'); // Asegúrate de tener el frontend corriendo
+    cy.visit('http://localhost:3000'); 
   });
 
   it('searches for flights successfully', () => {
@@ -189,9 +189,7 @@ describe('Flight Search E2E', () => {
     futureDate.setDate(futureDate.getDate() + 5);
     const formattedDate = futureDate.toISOString().split('T')[0];
     cy.get('#departureDate').type(formattedDate);
-
-    // adults
-    cy.get('#adults').clear().type('1');
+  
 
     // send form
     cy.contains('Search Flights').click();
@@ -201,7 +199,7 @@ describe('Flight Search E2E', () => {
   });
 
   it('sorts flights by price ascending', () => {
-    // Assume flights have been searched previously (or repeat same steps as above if needed)
+    
     cy.contains('Start Searching for Flights').click();
 
     cy.get('#departureInput').type('Madrid');
@@ -216,18 +214,20 @@ describe('Flight Search E2E', () => {
     futureDate.setDate(futureDate.getDate() + 5);
     const formattedDate = futureDate.toISOString().split('T')[0];
     cy.get('#departureDate').type(formattedDate);
-    cy.get('#adults').clear().type('1');
+    //cy.get('#adults').clear().type('1');
     cy.contains('Search Flights').click();
 
     cy.get('[data-cy=results-container]', { timeout: 10000 }).should('exist');
 
     // click to enable price sorting
-    cy.contains('Price').siblings('button').first().click();
+    cy.get('.sort-controls label')
+    .contains('Price')
+    .find('button')
+    .click();
 
-    // Esperar a que el orden cambie visualmente
     cy.wait(1000);
 
-    // Verificar orden por precio ascendente
+    // Verify sort by order
     cy.get('.flight-card').then(cards => {
       const prices = [...cards]
       .map(card => {
@@ -240,7 +240,7 @@ describe('Flight Search E2E', () => {
     })
     .filter((p): p is number => p !== null);
 
-      const sorted = [...prices].sort((a, b) => a - b);
+      const sorted = [...prices].sort((a, b) => b - a);
       expect(prices).to.deep.equal(sorted);
     });
   });

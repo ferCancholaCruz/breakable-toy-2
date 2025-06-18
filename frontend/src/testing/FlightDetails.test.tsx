@@ -5,6 +5,7 @@ import { FlightOfferDTO } from '../types/FlightTypes';
 
 const mockFlight: FlightOfferDTO = {
   departureAirportCode: 'JFK',
+  id: "mock-id-123",
   departureAirportName: 'John F. Kennedy International',
   departureDate: '2025-07-10',
   departureTime: '15:00',
@@ -25,17 +26,24 @@ const mockFlight: FlightOfferDTO = {
     {
       departureDateTime: '2025-07-10T15:00:00',
       arrivalDateTime: '2025-07-10T18:00:00',
+      departureAirportCode: 'JFK',
+      departureAirportName: 'John F. Kennedy International',
+      arrivalAirportCode: 'LAX',
+      arrivalAirportName: 'Los Angeles International',
       carrierCode: 'AA',
+      carrierName: 'American Airlines', 
       operatingCarrierCode: 'AA',
+      operatingCarrierName: 'American Airlines', 
       flightNumber: '123',
       aircraft: '738',
       duration: 'PT6H',
       cabin: 'ECONOMY',
       bookingClass: 'Y',
       amenities: [{ name: 'Wi-Fi', chargeable: true }],
-      id: '1',
+      id: '1'
     }
   ],
+  
   priceDetails: {
     base: '200.00',
     total: '250.00',

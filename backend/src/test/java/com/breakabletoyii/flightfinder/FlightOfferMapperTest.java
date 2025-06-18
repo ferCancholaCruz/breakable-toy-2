@@ -26,33 +26,65 @@ class FlightOfferMapperTest {
 
     @Test
     void shouldMapFlightOfferCorrectly() throws Exception {
-        String json = """
-        {
-          "itineraries": [
+                    String json = """
             {
-              "duration": "PT2H30M",
-              "segments": [
+              "id": "1",
+              "itineraries": [
                 {
-                  "departure": { "iataCode": "MAD", "at": "2025-12-01T08:00" },
-                  "arrival": { "iataCode": "BCN", "at": "2025-12-01T10:30" },
-                  "carrierCode": "IB",
-                  "number": "123",
-                  "aircraft": { "code": "320" },
-                  "operating": { "carrierCode": "IB" }
+                  "duration": "PT2H30M",
+                  "segments": [
+                    {
+                      "id": "1",
+                      "segmentId": "1",
+                      "departure": { "iataCode": "MAD", "at": "2025-12-01T08:00" },
+                      "arrival": { "iataCode": "BCN", "at": "2025-12-01T10:30" },
+                      "carrierCode": "IB",
+                      "number": "123",
+                      "aircraft": { "code": "320" },
+                      "operating": { "carrierCode": "IB" },
+                      "duration": "PT2H30M"
+                    }
+                  ]
+                }
+              ],
+              "price": {
+                "total": "200.00",
+                "base": "180.00",
+                "currency": "EUR",
+                "fees": [
+                  {
+                    "type": "TAX",
+                    "amount": "20.00"
+                  }
+                ]
+              },
+              "travelerPricings": [
+                {
+                  "travelerType": "ADULT",
+                  "price": {
+                    "total": "200.00"
+                  },
+                  "fareDetailsBySegment": [
+                    {
+                      "segmentId": "1",
+                      "cabin": "ECONOMY",
+                      "class": "Y",
+                      "fareBasis": "Y",
+                      "brandedFare": "BASIC",
+                      "amenities": [
+                        {
+                          "description": "WiFi",
+                          "isChargeable": false
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
-          ],
-          "price": {
-            "total": "200.00"
-          },
-          "travelerPricings": [
-            {
-              "price": { "total": "200.00" }
-            }
-          ]
-        }
-        """;
+""";
+
+
 
         JSONObject offer = new JSONObject(json);
         when(airlineServiceMock.getAirlineName("IB")).thenReturn("Iberia");

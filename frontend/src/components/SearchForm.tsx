@@ -95,7 +95,7 @@ const SearchForm: React.FC = () => {
       returnDate,
       numberAdults: adults,
       currency,
-      nonStop: false
+      nonStop: showDirect
     };
 
     try {
@@ -114,11 +114,11 @@ const SearchForm: React.FC = () => {
   return (
     <>
       <button
-        onClick={() => setShowForm((prev) => !prev)}
-        style={{ marginBottom: '1rem' }}
+      className="toggle-form-btn"
+     onClick={() => setShowForm((prev) => !prev)}
       >
-        {showForm ? 'Hide Search Form' : 'Start Searching for Flights'}
-      </button>
+      {showForm ? 'Hide Search Form' : 'Start Searching for Flights'}
+    </button>
   
       {showForm && (
         <>
@@ -230,22 +230,15 @@ const SearchForm: React.FC = () => {
             </div>
   
             <div className="form-group">
-              <label>Show flights with:</label>
-              <label style={{ marginLeft: '1rem' }}>
-                <input
-                  type="checkbox"
-                  checked={showDirect}
-                  onChange={(e) => setShowDirect(e.target.checked)}
-                /> Non-stops
-              </label>
-              <label style={{ marginLeft: '1rem' }}>
-                <input
-                  type="checkbox"
-                  checked={showWithStops}
-                  onChange={(e) => setShowWithStops(e.target.checked)}
-                /> Stops
-              </label>
-            </div>
+  <label>
+    <input
+      type="checkbox"
+      checked={showDirect}
+      onChange={(e) => setShowDirect(e.target.checked)}
+    /> Only show non-stop flights
+  </label>
+</div>
+
   
             <button type="submit">Search Flights</button>
           </form>
